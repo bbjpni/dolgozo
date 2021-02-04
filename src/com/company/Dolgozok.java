@@ -41,7 +41,7 @@ public class Dolgozok {
         return fizetes;
     }
 
-    private String Nev()
+    public String Nev()
     {
         String back = "";
         for (int i = 0; i < this.nev.length; i++) {

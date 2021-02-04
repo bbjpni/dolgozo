@@ -6,8 +6,9 @@ import java.util.Locale;
 import java.util.Scanner;
 
 public class Main {
-    public static void menu(ArrayList<Dolgozok> lista)
+    public static void menu(Adatbazis ab)
     {
+        ArrayList<Dolgozok> lista = ab.getDolgozok();
         String input = "";
         do {
             System.out.println("Menu:");
@@ -46,6 +47,88 @@ public class Main {
             if (input.equals("4")) { korKeres(lista); }
             if (input.equals("5")) { fizetesKeres(lista); }
         }
+        if (input.equals("2"))
+        {
+            dolgozFelvetel(lista, ab);
+        }
+    }
+
+    private static void dolgozFelvetel(ArrayList<Dolgozok> lista, Adatbazis ab) {
+        int nevHossz = 29;
+        boolean out = false;
+        int index = -1;
+        for (Dolgozok d : lista)
+        {
+            index = index < d.getId() ? d.getId() : index;
+        }
+        index++;
+        String vNev = "";
+        do {
+            System.out.print("Adja meg az új dolgozó vezetéknevét: ");
+            Scanner sc = new Scanner(System.in);
+            vNev = sc.next();
+            vNev = vNev.trim();
+            String u = vNev.toUpperCase().charAt(0)+"";
+            String n = vNev.charAt(0)+"";
+            out = n.equals(u) && vNev.length() > 1 && nevHossz - vNev.length() > 1;
+        }while (!out);
+        System.out.println();
+        nevHossz -= vNev.length();
+        String kNev = "";
+        do {
+            System.out.print("Adja meg az új dolgozó keresztnevét: ");
+            Scanner sc = new Scanner(System.in);
+            kNev = sc.next();
+            kNev = kNev.trim();
+            String u = kNev.toUpperCase().charAt(0)+"";
+            String n = kNev.charAt(0)+"";
+            out = n.equals(u) && kNev.length() > 1 && nevHossz - kNev.length() >= 0;;
+        }while (!out);
+        System.out.println();
+        String nem = "";
+        do {
+            System.out.print("Adja meg az új dolgozó nemét [férfi/nő]: ");
+            Scanner sc = new Scanner(System.in);
+            nem = sc.next();
+            out = nem.equals("férfi") || nem.equals("nő");
+        }while (!out);
+        System.out.println();
+
+        int kor = 0;
+        do {
+            System.out.print("Adja meg az új dolgozó életkorát [1-999]: ");
+            Scanner sc = new Scanner(System.in);
+            String temp = sc.next();
+            try {
+                kor = Integer.parseInt(temp);
+                out = temp.length() <= 3 && kor > 0;
+            }catch (Exception ex)
+            {
+                out = false;
+            }
+        }while (!out);
+        System.out.println();
+
+        int fizetes = 0;
+        do {
+            System.out.print("Adja meg az új dolgozó fizetését [78000-999999999]: ");
+            Scanner sc = new Scanner(System.in);
+            String temp = sc.next();
+            try {
+                fizetes = Integer.parseInt(temp);
+                out = temp.length() <= 9 && fizetes >= 78000;
+            }catch (Exception ex)
+            {
+                out = false;
+            }
+        }while (!out);
+        System.out.println();
+
+        Dolgozok d = new Dolgozok(index, nem.equals("férfi"), vNev+" "+kNev, kor, fizetes);
+        boolean adding = ab.Beszuras(d);
+        System.out.println((adding ? "Sikeres" : "sikertelen") + " rögzítés.");
+        if (adding){lista.add(d);}
+
     }
 
     public static void fizetesKeres(ArrayList<Dolgozok> lista)
@@ -188,7 +271,7 @@ public class Main {
     public static void main(String[] args) {
 
         Adatbazis ab = new Adatbazis();
-        menu(ab.getDolgozok());
+        menu(ab);
 
     }
 }
